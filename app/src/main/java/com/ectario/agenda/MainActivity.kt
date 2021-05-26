@@ -19,18 +19,6 @@ class MainActivity : AppCompatActivity() {
             dayList.add(Day(it.dayName))
         }
 
-        ///TEST
-
-        var hmap = ArrayList<HourSlot>()
-
-        hmap.add(HourSlot(11.7f, 13f, "Heure du test 2"))
-        var hs1 = HourSlot(8.7f, 10f, "Heure du test")
-        hmap.add(hs1)
-        hmap.add(HourSlot(13.7f, 16f, "Heure du test 3"))
-        dayList.add(Day("Test", hmap))
-
-        ///
-
         adapter = Adapter(applicationContext, dayList)
 
         val gridLayoutManager = GridLayoutManager(this, 2, GridLayoutManager.VERTICAL,false)

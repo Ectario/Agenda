@@ -1,21 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="24dp">
 
     <EditText
         android:id="@+id/edit_start_time_add"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/width_edittext_add_time"
         android:layout_height="wrap_content"
         android:hint="Heure de début" />
 
     <EditText
         android:id="@+id/edit_end_time_add"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/width_edittext_add_time"
         android:layout_height="wrap_content"
         android:layout_below="@id/edit_start_time_add"
         android:layout_alignParentStart="true"
-        android:hint="Heure de fin" />
+        android:hint="Heure de fin  " />
 
-</RelativeLayout>
+    <ImageButton
+        android:id="@+id/btn_timepicker_add_starttime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="7dp"
+        android:layout_toEndOf="@id/edit_start_time_add"
+        android:layout_marginStart="20sp"
+        android:background="@drawable/custom_button_timepicker"
+        android:src="@drawable/ic_timepicker_add" />
+
+    <ImageButton
+        android:id="@+id/btn_timepicker_add_endtime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="7dp"
+        android:layout_toEndOf="@id/edit_end_time_add"
+        android:layout_alignBottom="@id/edit_end_time_add"
+        android:layout_marginStart="20sp"
+        android:background="@drawable/custom_button_timepicker"
+        android:src="@drawable/ic_timepicker_add" />
+
+    </RelativeLayout>

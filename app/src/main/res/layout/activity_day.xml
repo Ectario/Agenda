@@ -14,7 +14,7 @@
 
     </LinearLayout>
 
-    <!-- With AndroidX if delete the border is wanted then add app:borderWidth="0dp" -->
+    <!-- With AndroidX if we want to delete the border then add app:borderWidth="0dp" -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addSlot"
         android:layout_width="wrap_content"
