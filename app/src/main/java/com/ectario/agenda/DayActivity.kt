@@ -2,6 +2,7 @@ package com.ectario.agenda
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -49,7 +50,7 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
         this.findViewById<LinearLayout>(R.id.linearLayoutDay).removeAllViews()
         day.timeSlots.sortBy { it.startTime }
         day.timeSlots.forEach {
-            var tv = TextView(applicationContext)
+            val tv = TextView(applicationContext)
             tv.text = HourSlot.formattingHour(it.startTime) + " to " + HourSlot.formattingHour(it.endTime) + " : " + it.slotName
             tv.textSize = 20f
             this.findViewById<LinearLayout>(R.id.linearLayoutDay)?.addView(tv)
@@ -60,6 +61,7 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
         val dialog = DialogToAddSlots()
         dialog.show(supportFragmentManager, "example dialog")
     }
+
 
     override fun applyAdd(hs: HourSlot) {
         //We need to apply the new slot

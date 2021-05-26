@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="width_edittext_add_time">170sp</dimen>
+</resources>
