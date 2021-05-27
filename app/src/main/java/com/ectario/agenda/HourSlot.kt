@@ -8,7 +8,7 @@ package com.ectario.agenda
  *  ex : 3H50 -> 3 + ((0.50*100) /60) ~ 3.83
  *
  *  The Reciprocal : hour+(min*0.6)
- *  ex : 3.83 -> 3H ((0.83*100)*0.6) ~ 3H50
+ *  ex : 3.83 -> 3H ((0.83*100)*60/100) ~ 3H50
  */
 
 class HourSlot(val startTime: Float, val endTime: Float, val slotName: String) {
@@ -27,10 +27,11 @@ class HourSlot(val startTime: Float, val endTime: Float, val slotName: String) {
         /**
          * Translate the hour in decimal.
          *
-         * @param WARNING The param need to be a float and his decimals need to be included in .0 to .59 (like minutes for an hour)
+         * @param WARNING The param need to be a float between .01 and 0.59
          */
         @Suppress("KDocUnresolvedReference") //The Suppress refer to the doc above
         fun translateHourToDecimal(hour: Float): Float {
+            if((hour - hour.round(0) > 0.59)) TODO("Error")
             return ((hour.round(0) + ((hour - hour.round(0)) / 0.6)).toFloat())
         }
 
