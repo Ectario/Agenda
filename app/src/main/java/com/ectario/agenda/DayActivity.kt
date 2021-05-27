@@ -58,7 +58,7 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
 
     private fun openDialog() {
         val dialog = DialogToAddSlots()
-        dialog.show(supportFragmentManager, "example dialog")
+        dialog.show(supportFragmentManager, "dialog")
     }
 
 
