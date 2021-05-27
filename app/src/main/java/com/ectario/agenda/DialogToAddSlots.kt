@@ -10,16 +10,17 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.lifecycle.ViewModelProvider
 
 
 class DialogToAddSlots : AppCompatDialogFragment() {
-    private var btnTimePickerStartTime : ImageButton? = null
-    private var btnTimePickerEndTime : ImageButton? = null
+    private lateinit var viewModelTimePicker: AddObserverTimePicker
+    private var btnTimePickerStartTime: ImageButton? = null
+    private var btnTimePickerEndTime: ImageButton? = null
     private var isBtnTimePickerClicked = false
     private var editTextStartTime: EditText? = null
     private var editTextEndTime: EditText? = null
     private var listener: AddSlotsDialogListener? = null
-
 
     @SuppressLint("ShowToast")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -35,8 +36,12 @@ class DialogToAddSlots : AppCompatDialogFragment() {
                 "Ok"
             ) { _, _ ->
                 try {
-                    val startTime = editTextStartTime!!.text.toString()
-                    val endTime = editTextEndTime!!.text.toString()
+                    var startTime = editTextStartTime!!.text.toString()
+                    var endTime = editTextEndTime!!.text.toString()
+
+                    startTime = startTime.replace(Regex("""[,:hH]"""), ".")
+                    endTime = endTime.replace(Regex("""[,:hH]"""), ".")
+
                     listener!!.applyAdd(
                         HourSlot(
                             startTime.toFloat(),
@@ -44,8 +49,12 @@ class DialogToAddSlots : AppCompatDialogFragment() {
                             "NameTest"
                         )
                     )
-                } catch (e : NumberFormatException) {
-                    Toast.makeText(context, "Activité non sauvegardée car elle a été mal remplie.", Toast.LENGTH_SHORT).show()
+                } catch (e: NumberFormatException) {
+                    Toast.makeText(
+                        context,
+                        "Activité non sauvegardée car elle a été mal remplie.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         editTextStartTime = view.findViewById(R.id.edit_start_time_add)
@@ -55,12 +64,12 @@ class DialogToAddSlots : AppCompatDialogFragment() {
 
         btnTimePickerStartTime?.setOnClickListener {
             val scale = 1.3f
-            if(!isBtnTimePickerClicked){
+            if (!isBtnTimePickerClicked) {
                 isBtnTimePickerClicked = true
                 it.animate().scaleXBy(scale).scaleYBy(scale).withEndAction {
                     it.animate().scaleXBy(-scale - 1).scaleYBy(-scale - 1).withEndAction {
                         it.animate().scaleX(1f).scaleY(1f).withEndAction {
-                            showTimePickerDialog(it)
+                            showTimePickerDialog(TimePickerFragment.CHANGE_STARTTIME)
                             isBtnTimePickerClicked = false
                         }
                     }
@@ -70,12 +79,12 @@ class DialogToAddSlots : AppCompatDialogFragment() {
 
         btnTimePickerEndTime?.setOnClickListener {
             val scale = 1.3f
-            if(!isBtnTimePickerClicked){
+            if (!isBtnTimePickerClicked) {
                 isBtnTimePickerClicked = true
                 it.animate().scaleXBy(scale).scaleYBy(scale).withEndAction {
                     it.animate().scaleXBy(-scale - 1).scaleYBy(-scale - 1).withEndAction {
                         it.animate().scaleX(1f).scaleY(1f).withEndAction {
-                            showTimePickerDialog(it)
+                            showTimePickerDialog(TimePickerFragment.CHANGE_ENDTIME)
                             isBtnTimePickerClicked = false
                         }
                     }
@@ -83,13 +92,27 @@ class DialogToAddSlots : AppCompatDialogFragment() {
             }
         }
 
+        //Assign the viewModel to share data between the dialog for adding and the timepicker
+        viewModelTimePicker = activity?.run {
+            ViewModelProvider(this).get(AddObserverTimePicker::class.java)
+        } ?: throw Exception("Invalid Activity")
+
+        //Observe the result of the time picker
+        viewModelTimePicker.endTime.observe(this, {
+            editTextEndTime?.setText(viewModelTimePicker.endTime.value)
+        })
+
+        viewModelTimePicker.startTime.observe(this, {
+            editTextStartTime?.setText(viewModelTimePicker.startTime.value)
+        })
+
         //Return an AlertDialog initialized
         return builder?.create()!!
     }
 
     //Display the timePicker
-    private fun showTimePickerDialog(v: View) {
-        TimePickerFragment().show(activity!!.supportFragmentManager, "timePickerAdd")
+    private fun showTimePickerDialog(actionTag: String) {
+        TimePickerFragment(actionTag).show(activity!!.supportFragmentManager, "timePickerAdd")
     }
 
     override fun onAttach(context: Context) {

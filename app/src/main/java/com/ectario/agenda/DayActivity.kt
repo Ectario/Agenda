@@ -2,7 +2,6 @@ package com.ectario.agenda
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
