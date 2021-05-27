@@ -12,7 +12,6 @@ package com.ectario.agenda
  */
 
 class HourSlot(val startTime: Float, val endTime: Float, val slotName: String) {
-    val duration = endTime - startTime
 
     companion object {
 
@@ -30,7 +29,7 @@ class HourSlot(val startTime: Float, val endTime: Float, val slotName: String) {
          *
          * @param WARNING The param need to be a float and his decimals need to be included in .0 to .59 (like minutes for an hour)
          */
-        @Suppress("KDocUnresolvedReference")
+        @Suppress("KDocUnresolvedReference") //The Suppress refer to the doc above
         fun translateHourToDecimal(hour: Float): Float {
             return ((hour.round(0) + ((hour - hour.round(0)) / 0.6)).toFloat())
         }
@@ -40,7 +39,7 @@ class HourSlot(val startTime: Float, val endTime: Float, val slotName: String) {
          *  example : 15 -> 15h00
          *      and 15.1 -> 15h10
          *      and 3 -> 3H00
-         *  @param hour this is the hour in HOUR and not in DECIMAL
+         *  @param hour this is the hour in HOUR and not in DECIMAL : like 3.3 to mean 3h30 and NOT 3.5 to mean 3h30
          */
 
         fun formattingHour(hour: Float) : String {
