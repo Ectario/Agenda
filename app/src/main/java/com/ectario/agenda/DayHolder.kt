@@ -4,13 +4,14 @@ object DayHolder {
     lateinit var currentDay: Day
 
     enum class NameOfDays(val dayName: String) {
-        LUNDI("Lundi"),
-        MARDI("Mardi"),
-        MERCREDI("Mercredi"),
-        JEUDI("Jeudi"),
-        VENDREDI("Vendredi"),
-        SAMEDI("Samedi"),
-        DIMANCHE("Dimanche"),
+        MONDAY("Lundi"),
+        TUESDAY("Mardi"),
+        WEDNESDAY("Mercredi"),
+        THURSDAY("Jeudi"),
+        FRIDAY("Vendredi"),
+        SATURDAY("Samedi"),
+        SUNDAY("Dimanche"),
         TO_DO("To do")
     }
+
 }

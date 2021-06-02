@@ -1,5 +1,6 @@
 package com.ectario.agenda
 
+
 /**
  *  Times need to be given in HOUR not in DECIMAL. (like 4.45 to mean 4H45).
  *  Format time is 24H.
@@ -15,23 +16,17 @@ class HourSlot(val startTime: Float, val endTime: Float, val slotName: String) {
 
     companion object {
 
-        /**
-         * Translate the decimal in hour.
-         *
-         */
-
         fun translateDecimalToHour(dec: Float): Float {
             return (dec.round(0) + ((dec - dec.round(0)) * 0.6)).toFloat().round(2)
         }
 
         /**
-         * Translate the hour in decimal.
-         *
-         * @param WARNING The param need to be a float between .01 and 0.59
+         * @param hour WARNING The param need to be a float between .01 and 0.59 included.
          */
-        @Suppress("KDocUnresolvedReference") //The Suppress refer to the doc above
         fun translateHourToDecimal(hour: Float): Float {
-            if((hour - hour.round(0) > 0.59)) TODO("Error")
+            if((hour - hour.round(0) >= 0.6)) {
+                error("The decimal part in translateHourToDecimal must be between .01 and 0.59 : ${(hour - hour.round(0))}")
+            }
             return ((hour.round(0) + ((hour - hour.round(0)) / 0.6)).toFloat())
         }
 

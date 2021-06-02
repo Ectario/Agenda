@@ -3,7 +3,7 @@ package com.ectario.agenda
 class Day (val name : String, val timeSlots : ArrayList<HourSlot> = ArrayList()){ // (Time format is 24H)
 
     /**
-     * @param HourSlot to add, his name, and a bool to force the adding (if other HourSlot collides then they're released)
+     *
      * @return true if the HourSlot is added, and false if it was colliding with another
      */
 
