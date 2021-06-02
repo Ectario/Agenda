@@ -127,7 +127,7 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
             activitySeparatorStart.setBackgroundColor(
                 ContextCompat.getColor(
                     applicationContext,
-                    R.color.dark_gray
+                    R.color.dark_gray_high
                 )
             )
             activityColumnView.addView(activitySeparatorStart)
@@ -138,6 +138,12 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
             tvActivity.textSize = 20f
             tvActivity.gravity = Gravity.CENTER
             tvActivity.setTextColor(getColor(R.color.black))
+            tvActivity.setBackgroundColor(
+                ContextCompat.getColor(
+                    applicationContext,
+                    R.color.light_gray
+                )
+            )
             activityColumnView.addView(tvActivity)
 
             //Reconfigure the height of the textview to allow the centering and the alignment for the separator
@@ -165,7 +171,7 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
             activitySeparatorEnd.setBackgroundColor(
                 ContextCompat.getColor(
                     applicationContext,
-                    R.color.dark_gray
+                    R.color.dark_gray_high
                 )
             )
             activityColumnView.addView(activitySeparatorEnd)
