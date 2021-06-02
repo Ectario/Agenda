@@ -12,6 +12,7 @@ import androidx.core.view.children
 import com.ectario.agenda.tools.dpToPx
 import com.ectario.agenda.tools.setMargins
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 
 class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity() {
     private lateinit var day: Day
@@ -106,7 +107,7 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
                         y + lastChild.measuredHeight / 2,
                         y + lastChild.measuredHeight
                     )
-            } else error("Child in hourColumnView are not all a textview")
+            } else error("Child in hourColumnView must all be a textview")
 
             //display each exact hour
             val next: Int = if (listHour.size > i + 1) listHour[i + 1].round(0).toInt() else -1
@@ -153,7 +154,8 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
             val lastChild = activityColumnView.children.last()
 
             if (lastChild is TextView) {
-                @Suppress("NAME_SHADOWING") val wrapSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                @Suppress("NAME_SHADOWING") val wrapSpec =
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
                 (lastChild.parent as View).measure(
                     wrapSpec,
                     wrapSpec
@@ -162,7 +164,7 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
                 lastChild.height = (
                         yHour[HourSlot.formattingHour(it.endTime)]!!.third - offset
                         )
-            } else error("Child in activityColumnView are not all a textview")
+            } else error("Child in activityColumnView must all be a textview")
 
             //Display the separator [end]
             val activitySeparatorEnd = TextView(applicationContext)
@@ -186,7 +188,8 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
                 activityColumnView.addView(tvBlankActivity)
 
                 //Reconfigure the height of the textview to allow the centering and the alignment for the next activity
-                @Suppress("NAME_SHADOWING") val wrapSpec: Int = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                @Suppress("NAME_SHADOWING") val wrapSpec: Int =
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
                 (tvBlankActivity.parent as View).measure(
                     wrapSpec,
                     wrapSpec
@@ -195,16 +198,22 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
                 val lastBlankChild = activityColumnView.children.last()
 
                 if (lastBlankChild is TextView) {
-                    @Suppress("NAME_SHADOWING") val wrapSpec: Int = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                    @Suppress("NAME_SHADOWING") val wrapSpec: Int =
+                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
                     (lastBlankChild.parent as View).measure(wrapSpec, wrapSpec)
                     val offset = (lastBlankChild.parent as View).measuredHeight
                     lastBlankChild.height = (
                             yHour[HourSlot.formattingHour(next.startTime)]!!.second - offset
                             )
-                } else error("Child in activityColumnView are not all a textview")
+                } else error("Child in activityColumnView must all be a textview")
             }
 
         }
+        Snackbar.make(
+            this.findViewById(R.id.constraint_container),
+            "Actualisé",
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
 
