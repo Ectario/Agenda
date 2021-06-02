@@ -40,6 +40,7 @@ class Adapter(ctx: Context?, var dayList: List<Day>) :
             itemView.setOnClickListener {
                 it.animate().rotationX(it.rotationX + 360f).setDuration(350).withEndAction {
                     val intent = Intent(it.context, DayActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) //Allow to start an Activity from here
                     DayHolder.currentDay = dayList[layoutPosition]
                     it.context.startActivity(intent)
                 }
