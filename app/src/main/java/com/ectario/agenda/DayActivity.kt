@@ -21,6 +21,7 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
     companion object {
         private var is_btn_add_clicked = false //to unable the spam click
         private const val ACTIVITY_COLUMN_VIEW_SEPARATOR_HEIGHT = 2f //in dp
+        private const val BLANK_TEXTVIEW_TEXT = ""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -146,8 +147,11 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
             val lastChild = activityColumnView.children.last()
 
             if (lastChild is TextView) {
-                val wrapSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-                (lastChild.parent as View).measure(wrapSpec, wrapSpec)
+                @Suppress("NAME_SHADOWING") val wrapSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                (lastChild.parent as View).measure(
+                    wrapSpec,
+                    wrapSpec
+                )
                 val offset = (lastChild.parent as View).measuredHeight
                 lastChild.height = (
                         yHour[HourSlot.formattingHour(it.endTime)]!!.third - offset
@@ -171,18 +175,21 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
             val next: HourSlot? = if (day.timeSlots.size > i + 1) day.timeSlots[i + 1] else null
             if (next != null) {
                 val tvBlankActivity = TextView(applicationContext)
-                tvBlankActivity.text = ""
+                tvBlankActivity.text = BLANK_TEXTVIEW_TEXT
                 tvBlankActivity.setTextColor(getColor(R.color.black))
                 activityColumnView.addView(tvBlankActivity)
 
                 //Reconfigure the height of the textview to allow the centering and the alignment for the next activity
-                val wrapSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-                (tvBlankActivity.parent as View).measure(wrapSpec, wrapSpec)
+                @Suppress("NAME_SHADOWING") val wrapSpec: Int = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                (tvBlankActivity.parent as View).measure(
+                    wrapSpec,
+                    wrapSpec
+                )
 
                 val lastBlankChild = activityColumnView.children.last()
 
                 if (lastBlankChild is TextView) {
-                    val wrapSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                    @Suppress("NAME_SHADOWING") val wrapSpec: Int = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
                     (lastBlankChild.parent as View).measure(wrapSpec, wrapSpec)
                     val offset = (lastBlankChild.parent as View).measuredHeight
                     lastBlankChild.height = (
@@ -212,14 +219,6 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
             tvHour.text = HourSlot.formattingHour(i.toFloat())
             hourViewToFill.addView(tvHour)
         }
-
-        val lastChild = hourViewToFill.children.last()
-
-        if (lastChild is TextView) {
-            val wrapSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-            (lastChild.parent as View).measure(wrapSpec, wrapSpec)
-            val height = (lastChild.parent as View).measuredHeight
-        } else error("Child in hourColumnView are not all a textview")
     }
 
     private fun openDialog() {
