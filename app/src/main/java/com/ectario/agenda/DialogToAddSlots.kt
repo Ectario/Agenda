@@ -11,17 +11,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.snackbar.Snackbar
 
 
 class DialogToAddSlots : AppCompatDialogFragment() {
-    private lateinit var viewModelTimePicker: AddObserverTimePicker
-    private var btnTimePickerStartTime: ImageButton? = null
-    private var btnTimePickerEndTime: ImageButton? = null
-    private var isBtnTimePickerClicked = false
-    private var editTextStartTime: EditText? = null
-    private var editTextEndTime: EditText? = null
-    private var listener: AddSlotsDialogListener? = null
+    private lateinit var mViewModelTimePicker: AddObserverTimePicker
+    private var mBtnTimePickerStartTime: ImageButton? = null
+    private var mBtnTimePickerEndTime: ImageButton? = null
+    private var mIsBtnTimePickerClicked = false
+    private var mEditTextStartTime: EditText? = null
+    private var mEditTextEndTime: EditText? = null
+    private var mEditTextActivityName: EditText? = null
+    private var mListener: AddSlotsDialogListener? = null
 
     @SuppressLint("ShowToast")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -37,67 +37,91 @@ class DialogToAddSlots : AppCompatDialogFragment() {
                 "Ok"
             ) { _, _ ->
                 try {
-                    var startTime = editTextStartTime!!.text.toString()
-                    var endTime = editTextEndTime!!.text.toString()
+                    var changeNeeded = false
+                    var startTime = mEditTextStartTime!!.text.toString()
+                    var endTime = mEditTextEndTime!!.text.toString()
+                    val activityName = mEditTextActivityName!!.text.toString()
 
                     startTime = startTime.replace(Regex("""[,:hH]"""), ".")
                     endTime = endTime.replace(Regex("""[,:hH]"""), ".")
 
-                    val startTimeFloat = (startTime.toFloat() % 24).round(2) // if the user say something like : 26H123 that become 2H12
-                    val endTimeFloat = (endTime.toFloat() % 24).round(2)
+                    var startTimeFloat = (startTime.toFloat() % 24)
+                    var endTimeFloat = (endTime.toFloat() % 24)
+
+                    if (startTimeFloat != startTime.toFloat() || endTimeFloat != endTime.toFloat()) changeNeeded = true
+
+                    startTimeFloat = if(startTimeFloat.decimalPart() > 0.59) {changeNeeded = true; startTimeFloat-startTimeFloat.decimalPart() } else startTimeFloat
+                    endTimeFloat = if(endTimeFloat.decimalPart() > 0.59) {changeNeeded = true; endTimeFloat-endTimeFloat.decimalPart() } else endTimeFloat
+
+                    if(activityName == ""){
+                        Toast.makeText(
+                            context,
+                            "Nom d'activité vide [Attention].",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    if(changeNeeded == true){
+                        Toast.makeText(
+                            context,
+                            "Heure hors format 24H/60min [Attention].",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
 
                     if(endTimeFloat <= startTimeFloat) {
                         Toast.makeText(
                             context,
-                            "Heure de début et de fin non cohérentes.",
+                            "Heure de début et de fin non cohérentes. [Erreur]",
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        listener!!.applyAdd(
+                        mListener!!.applyAdd(
                             HourSlot(
                                 startTimeFloat,
                                 endTimeFloat,
-                                "NameTest"
+                                activityName
                             )
                         )
                     }
                 } catch (e: NumberFormatException) {
                     Toast.makeText(
                         context,
-                        "Activité non sauvegardée car elle a été mal remplie.",
+                        "Activité non sauvegardée car elle a été mal remplie. [Erreur]",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             }
-        editTextStartTime = view.findViewById(R.id.edit_start_time_add)
-        editTextEndTime = view.findViewById(R.id.edit_end_time_add)
-        btnTimePickerStartTime = view.findViewById(R.id.btn_timepicker_add_starttime)
-        btnTimePickerEndTime = view.findViewById(R.id.btn_timepicker_add_endtime)
+        mEditTextStartTime = view.findViewById(R.id.edit_start_time_add)
+        mEditTextEndTime = view.findViewById(R.id.edit_end_time_add)
+        mBtnTimePickerStartTime = view.findViewById(R.id.btn_timepicker_add_starttime)
+        mBtnTimePickerEndTime = view.findViewById(R.id.btn_timepicker_add_endtime)
+        mEditTextActivityName = view.findViewById(R.id.edit_activity_name_add)
 
-        btnTimePickerStartTime?.setOnClickListener {
+        mBtnTimePickerStartTime?.setOnClickListener {
             val scale = 1.3f
-            if (!isBtnTimePickerClicked) {
-                isBtnTimePickerClicked = true
+            if (!mIsBtnTimePickerClicked) {
+                mIsBtnTimePickerClicked = true
                 it.animate().scaleXBy(scale).scaleYBy(scale).withEndAction {
                     it.animate().scaleXBy(-scale - 1).scaleYBy(-scale - 1).withEndAction {
                         it.animate().scaleX(1f).scaleY(1f).withEndAction {
                             showTimePickerDialog(TimePickerFragment.CHANGE_STARTTIME)
-                            isBtnTimePickerClicked = false
+                            mIsBtnTimePickerClicked = false
                         }
                     }
                 }.setDuration(200).start()
             }
         }
 
-        btnTimePickerEndTime?.setOnClickListener {
+        mBtnTimePickerEndTime?.setOnClickListener {
             val scale = 1.3f
-            if (!isBtnTimePickerClicked) {
-                isBtnTimePickerClicked = true
+            if (!mIsBtnTimePickerClicked) {
+                mIsBtnTimePickerClicked = true
                 it.animate().scaleXBy(scale).scaleYBy(scale).withEndAction {
                     it.animate().scaleXBy(-scale - 1).scaleYBy(-scale - 1).withEndAction {
                         it.animate().scaleX(1f).scaleY(1f).withEndAction {
                             showTimePickerDialog(TimePickerFragment.CHANGE_ENDTIME)
-                            isBtnTimePickerClicked = false
+                            mIsBtnTimePickerClicked = false
                         }
                     }
                 }.setDuration(200).start()
@@ -105,17 +129,17 @@ class DialogToAddSlots : AppCompatDialogFragment() {
         }
 
         //Assign the viewModel to share data between the dialog for adding and the timepicker
-        viewModelTimePicker = activity?.run {
+        mViewModelTimePicker = activity?.run {
             ViewModelProvider(this).get(AddObserverTimePicker::class.java)
         } ?: throw Exception("Invalid Activity")
 
         //Observe the result of the time picker
-        viewModelTimePicker.endTime.observe(this, {
-            editTextEndTime?.setText(viewModelTimePicker.endTime.value)
+        mViewModelTimePicker.endTime.observe(this, {
+            mEditTextEndTime?.setText(mViewModelTimePicker.endTime.value)
         })
 
-        viewModelTimePicker.startTime.observe(this, {
-            editTextStartTime?.setText(viewModelTimePicker.startTime.value)
+        mViewModelTimePicker.startTime.observe(this, {
+            mEditTextStartTime?.setText(mViewModelTimePicker.startTime.value)
         })
 
         //Return an AlertDialog initialized
@@ -129,7 +153,7 @@ class DialogToAddSlots : AppCompatDialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        listener = try {
+        mListener = try {
             context as AddSlotsDialogListener
         } catch (e: ClassCastException) {
             throw ClassCastException(
