@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.snackbar.Snackbar
 
 
 class DialogToAddSlots : AppCompatDialogFragment() {
@@ -42,13 +43,24 @@ class DialogToAddSlots : AppCompatDialogFragment() {
                     startTime = startTime.replace(Regex("""[,:hH]"""), ".")
                     endTime = endTime.replace(Regex("""[,:hH]"""), ".")
 
-                    listener!!.applyAdd(
-                        HourSlot(
-                            startTime.toFloat(),
-                            endTime.toFloat(),
-                            "NameTest"
+                    val startTimeFloat = (startTime.toFloat() % 24).round(2) // if the user say something like : 26H123 that become 2H12
+                    val endTimeFloat = (endTime.toFloat() % 24).round(2)
+
+                    if(endTimeFloat <= startTimeFloat) {
+                        Toast.makeText(
+                            context,
+                            "Heure de début et de fin non cohérentes.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        listener!!.applyAdd(
+                            HourSlot(
+                                startTimeFloat,
+                                endTimeFloat,
+                                "NameTest"
+                            )
                         )
-                    )
+                    }
                 } catch (e: NumberFormatException) {
                     Toast.makeText(
                         context,
