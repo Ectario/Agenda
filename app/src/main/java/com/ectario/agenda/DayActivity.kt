@@ -1,23 +1,29 @@
 package com.ectario.agenda
 
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
-import com.ectario.agenda.objectsAndClasses.DayManager
 import com.ectario.agenda.dialog.DialogToAddSlots
 import com.ectario.agenda.objectsAndClasses.Day
+import com.ectario.agenda.objectsAndClasses.DayManager
 import com.ectario.agenda.objectsAndClasses.HourSlot
 import com.ectario.agenda.objectsAndClasses.SaveManager
 import com.ectario.agenda.tools.dpToPx
 import com.ectario.agenda.tools.setMargins
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+
 
 class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity() {
     private lateinit var day: Day
@@ -74,23 +80,140 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
 
         //Write the content
 
-        //Display hours
-
         //Sort the hour
-        day.timeSlots.sortBy { it.startTime }
+        sortDayTimesSlots(listHour)
+        //Display hours
+        displayHours(listHour, listHourView, hourColumnView, yHour)
 
-        day.timeSlots.forEach {
-            listHour.add(it.startTime)
-            listHour.add(it.endTime)
+        //Display activity
+        displayActivity(activityColumnView, yHour)
+
+    }
+
+    private fun displayActivity(
+        activityColumnView: LinearLayout,
+        yHour: HashMap<String, Triple<Int, Int, Int>>
+    ) {
+        day.timeSlots.forEachIndexed { i, it ->
+
+            //Display the separator [start]
+            addAndDisplaySeparator(activityColumnView)
+
+            //display the activity name
+            displayActivityName(it, activityColumnView, yHour)
+
+            //Display the separator [end]
+            addAndDisplaySeparator(activityColumnView)
+
+            //Add blank space between activities
+            addAndDisplayBlankspace(i, activityColumnView, yHour)
+
         }
+    }
 
-        listHour.sort()
+    private fun addAndDisplayBlankspace(
+        index: Int,
+        activityColumnView: LinearLayout,
+        yHour: HashMap<String, Triple<Int, Int, Int>>
+    ) {
+        val next: HourSlot? = if (day.timeSlots.size > index + 1) day.timeSlots[index + 1] else null
+        if (next != null) {
+            val tvBlankActivity = TextView(applicationContext)
+            tvBlankActivity.text = BLANK_TEXTVIEW_TEXT
+            tvBlankActivity.setTextColor(getColor(R.color.black))
+            activityColumnView.addView(tvBlankActivity)
 
+            //Reconfigure the height of the textview to allow the centering and the alignment for the next activity
+            @Suppress("NAME_SHADOWING") val wrapSpec: Int =
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+            (tvBlankActivity.parent as View).measure(
+                wrapSpec,
+                wrapSpec
+            )
+
+            val lastBlankChild = activityColumnView.children.last()
+
+            if (lastBlankChild is TextView) {
+                @Suppress("NAME_SHADOWING") val wrapSpec: Int =
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                (lastBlankChild.parent as View).measure(wrapSpec, wrapSpec)
+                val offset = (lastBlankChild.parent as View).measuredHeight
+                lastBlankChild.height = (
+                        yHour[HourSlot.formattingHour(next.startTime)]!!.second - offset
+                        )
+            } else error("Child in activityColumnView must all be a textview")
+        }
+    }
+
+    private fun displayActivityName(
+        hourSlot: HourSlot,
+        activityColumnView: LinearLayout,
+        yHour: HashMap<String, Triple<Int, Int, Int>>
+    ) {
+        val tvActivity = TextView(applicationContext)
+        tvActivity.text = hourSlot.slotName
+        tvActivity.textSize = 20f
+        tvActivity.gravity = Gravity.CENTER
+        tvActivity.setTextColor(getColor(R.color.black))
+        tvActivity.setBackgroundColor(
+            ContextCompat.getColor(
+                applicationContext,
+                R.color.light_gray
+            )
+        ) //add click listener [to delete]
+        tvActivity.setOnClickListener { _ ->
+            Snackbar.make(
+                this.findViewById(R.id.constraint_container),
+                "Supprimer le créneau ${hourSlot.slotName} ?", //"it" is not the local variable of the setOnClickListener (which is shadowed by the _)
+                Snackbar.LENGTH_LONG
+            ).setAction("Oui", DeleteListener(tvActivity, hourSlot)).show()
+        }
+        activityColumnView.addView(tvActivity)
+
+        //Reconfigure the height of the textview to allow the centering and the alignment for the separator
+        val wrapSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        (tvActivity.parent as View).measure(wrapSpec, wrapSpec)
+
+        val lastChild = activityColumnView.children.last()
+
+        if (lastChild is TextView) {
+            @Suppress("NAME_SHADOWING") val wrapSpec =
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+            (lastChild.parent as View).measure(
+                wrapSpec,
+                wrapSpec
+            )
+            val offset = (lastChild.parent as View).measuredHeight
+            lastChild.height = (
+                    yHour[HourSlot.formattingHour(hourSlot.endTime)]!!.third - offset
+                    )
+        } else error("Child in activityColumnView must all be a textview")
+    }
+
+    private fun addAndDisplaySeparator(activityColumnView: LinearLayout) {
+        val activitySeparator = TextView(applicationContext)
+        activitySeparator.height = dpToPx(ACTIVITY_COLUMN_VIEW_SEPARATOR_HEIGHT)
+        activitySeparator.width = activityColumnView.width
+        activitySeparator.setBackgroundColor(
+            ContextCompat.getColor(
+                applicationContext,
+                R.color.dark_gray_high
+            )
+        )
+        activityColumnView.addView(activitySeparator)
+    }
+
+    private fun displayHours(
+        listHour: ArrayList<Float>,
+        listHourView: ArrayList<TextView>,
+        hourColumnView: LinearLayout,
+        yHour: HashMap<String, Triple<Int, Int, Int>>
+    ) {
         listHour.forEachIndexed { i, it ->
             //Display each hour
             val tvHour = TextView(applicationContext)
             tvHour.setMargins(top = 16)
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 tvHour.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM)
             }
             tvHour.setTextColor(getColor(R.color.black))
@@ -122,103 +245,17 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
                 hourColumnView
             )
         }
+    }
 
-        //Display activity
-        day.timeSlots.forEachIndexed { i, it ->
+    private fun sortDayTimesSlots(listHour: ArrayList<Float>) {
+        day.timeSlots.sortBy { it.startTime }
 
-            //Display the separator [start]
-            val activitySeparatorStart = TextView(applicationContext)
-            activitySeparatorStart.height = dpToPx(ACTIVITY_COLUMN_VIEW_SEPARATOR_HEIGHT)
-            activitySeparatorStart.width = activityColumnView.width
-            activitySeparatorStart.setBackgroundColor(
-                ContextCompat.getColor(
-                    applicationContext,
-                    R.color.dark_gray_high
-                )
-            )
-            activityColumnView.addView(activitySeparatorStart)
-
-            //display the activity name
-            val tvActivity = TextView(applicationContext)
-            tvActivity.text = it.slotName
-            tvActivity.textSize = 20f
-            tvActivity.gravity = Gravity.CENTER
-            tvActivity.setTextColor(getColor(R.color.black))
-            tvActivity.setBackgroundColor(
-                ContextCompat.getColor(
-                    applicationContext,
-                    R.color.light_gray
-                )
-            )
-            activityColumnView.addView(tvActivity)
-
-            //Reconfigure the height of the textview to allow the centering and the alignment for the separator
-            val wrapSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-            (tvActivity.parent as View).measure(wrapSpec, wrapSpec)
-
-            val lastChild = activityColumnView.children.last()
-
-            if (lastChild is TextView) {
-                @Suppress("NAME_SHADOWING") val wrapSpec =
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-                (lastChild.parent as View).measure(
-                    wrapSpec,
-                    wrapSpec
-                )
-                val offset = (lastChild.parent as View).measuredHeight
-                lastChild.height = (
-                        yHour[HourSlot.formattingHour(it.endTime)]!!.third - offset
-                        )
-            } else error("Child in activityColumnView must all be a textview")
-
-            //Display the separator [end]
-            val activitySeparatorEnd = TextView(applicationContext)
-            activitySeparatorEnd.height = dpToPx(ACTIVITY_COLUMN_VIEW_SEPARATOR_HEIGHT)
-            activitySeparatorEnd.width = activityColumnView.width
-            activitySeparatorEnd.setBackgroundColor(
-                ContextCompat.getColor(
-                    applicationContext,
-                    R.color.dark_gray_high
-                )
-            )
-            activityColumnView.addView(activitySeparatorEnd)
-
-            //Add blank space between activities
-
-            val next: HourSlot? = if (day.timeSlots.size > i + 1) day.timeSlots[i + 1] else null
-            if (next != null) {
-                val tvBlankActivity = TextView(applicationContext)
-                tvBlankActivity.text = BLANK_TEXTVIEW_TEXT
-                tvBlankActivity.setTextColor(getColor(R.color.black))
-                activityColumnView.addView(tvBlankActivity)
-
-                //Reconfigure the height of the textview to allow the centering and the alignment for the next activity
-                @Suppress("NAME_SHADOWING") val wrapSpec: Int =
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-                (tvBlankActivity.parent as View).measure(
-                    wrapSpec,
-                    wrapSpec
-                )
-
-                val lastBlankChild = activityColumnView.children.last()
-
-                if (lastBlankChild is TextView) {
-                    @Suppress("NAME_SHADOWING") val wrapSpec: Int =
-                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-                    (lastBlankChild.parent as View).measure(wrapSpec, wrapSpec)
-                    val offset = (lastBlankChild.parent as View).measuredHeight
-                    lastBlankChild.height = (
-                            yHour[HourSlot.formattingHour(next.startTime)]!!.second - offset
-                            )
-                } else error("Child in activityColumnView must all be a textview")
-            }
-
+        day.timeSlots.forEach {
+            listHour.add(it.startTime)
+            listHour.add(it.endTime)
         }
-        Snackbar.make(
-            this.findViewById(R.id.constraint_container),
-            "Actualisé",
-            Snackbar.LENGTH_SHORT
-        ).show()
+
+        listHour.sort()
     }
 
 
@@ -232,12 +269,30 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
             //Display each hour
             val tvHour = TextView(applicationContext)
             tvHour.setMargins(top = 16)
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 tvHour.setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM)
             }
             tvHour.setTextColor(getColor(R.color.black))
             tvHour.text = HourSlot.formattingHour(i.toFloat())
             hourViewToFill.addView(tvHour)
+        }
+    }
+
+    private inner class DeleteListener(val viewToApplyAnimation: View, val hourSlot: HourSlot) :
+        View.OnClickListener {
+        override fun onClick(v: View?) {
+            val animation1: Animation =
+                AnimationUtils.loadAnimation(applicationContext, R.anim.delete_anim)
+            viewToApplyAnimation.startAnimation(animation1)
+
+            val h = Handler(Looper.myLooper()!!)
+            h.postDelayed(
+                {
+                    day.timeSlots.remove(hourSlot)
+                    SaveManager.saveWeek(applicationContext)
+                    refreshDisplay()
+                }, applicationContext.resources.getInteger(R.integer.delete_anim_duration).toLong()
+            )
         }
     }
 
