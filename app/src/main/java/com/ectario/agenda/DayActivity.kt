@@ -1,23 +1,29 @@
 package com.ectario.agenda
 
+import android.content.res.Resources
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Handler
 import android.view.Gravity
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.children
-import com.ectario.agenda.objectsAndClasses.DayManager
 import com.ectario.agenda.dialog.DialogToAddSlots
 import com.ectario.agenda.objectsAndClasses.Day
+import com.ectario.agenda.objectsAndClasses.DayManager
 import com.ectario.agenda.objectsAndClasses.HourSlot
 import com.ectario.agenda.objectsAndClasses.SaveManager
 import com.ectario.agenda.tools.dpToPx
 import com.ectario.agenda.tools.setMargins
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+
 
 class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity() {
     private lateinit var day: Day
@@ -66,7 +72,7 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
         val listHour = ArrayList<Float>()
         val listHourView = ArrayList<TextView>()
         val yHour =
-            HashMap<String, Triple<Int, Int, Int>>() // key = formatted hour in the column, value = ( start, middle , end) -> To format the activity column with the y axe
+                HashMap<String, Triple<Int, Int, Int>>() // key = formatted hour in the column, value = ( start, middle , end) -> To format the activity column with the y axe
 
         //Erase the past content
         activityColumnView.removeAllViews()
@@ -107,19 +113,19 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
                 (lastChild.parent as View).measure(wrapSpec, wrapSpec)
                 val y = (lastChild.parent as View).measuredHeight
                 yHour[lastChild.text.toString()] =
-                    Triple(
-                        y,
-                        y + lastChild.measuredHeight / 2,
-                        y + lastChild.measuredHeight
-                    )
+                        Triple(
+                                y,
+                                y + lastChild.measuredHeight / 2,
+                                y + lastChild.measuredHeight
+                        )
             } else error("Child in hourColumnView must all be a textview")
 
             //display each exact hour
             val next: Int = if (listHour.size > i + 1) listHour[i + 1].round(0).toInt() else -1
             if (next > -1) fillAndDisplayHour(
-                it.round(0).toInt() + 1,
-                if (next.toFloat() == listHour[i + 1]) next else next + 1,
-                hourColumnView
+                    it.round(0).toInt() + 1,
+                    if (next.toFloat() == listHour[i + 1]) next else next + 1,
+                    hourColumnView
             )
         }
 
@@ -131,10 +137,10 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
             activitySeparatorStart.height = dpToPx(ACTIVITY_COLUMN_VIEW_SEPARATOR_HEIGHT)
             activitySeparatorStart.width = activityColumnView.width
             activitySeparatorStart.setBackgroundColor(
-                ContextCompat.getColor(
-                    applicationContext,
-                    R.color.dark_gray_high
-                )
+                    ContextCompat.getColor(
+                            applicationContext,
+                            R.color.dark_gray_high
+                    )
             )
             activityColumnView.addView(activitySeparatorStart)
 
@@ -145,17 +151,17 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
             tvActivity.gravity = Gravity.CENTER
             tvActivity.setTextColor(getColor(R.color.black))
             tvActivity.setBackgroundColor(
-                ContextCompat.getColor(
-                    applicationContext,
-                    R.color.light_gray
-                )
+                    ContextCompat.getColor(
+                            applicationContext,
+                            R.color.light_gray
+                    )
             ) //add click listener [to delete]
             tvActivity.setOnClickListener { _ ->
                 Snackbar.make(
-                    this.findViewById(R.id.constraint_container),
-                    "Supprimer le créneau ${it.slotName} ?", //"it" is not the local variable of the setOnClickListener (which is shadowed by the _)
-                    Snackbar.LENGTH_LONG
-                ).setAction("Oui", DeleteListener(tvActivity,it)).show()
+                        this.findViewById(R.id.constraint_container),
+                        "Supprimer le créneau ${it.slotName} ?", //"it" is not the local variable of the setOnClickListener (which is shadowed by the _)
+                        Snackbar.LENGTH_LONG
+                ).setAction("Oui", DeleteListener(tvActivity, it)).show()
             }
             activityColumnView.addView(tvActivity)
 
@@ -167,10 +173,10 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
 
             if (lastChild is TextView) {
                 @Suppress("NAME_SHADOWING") val wrapSpec =
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
                 (lastChild.parent as View).measure(
-                    wrapSpec,
-                    wrapSpec
+                        wrapSpec,
+                        wrapSpec
                 )
                 val offset = (lastChild.parent as View).measuredHeight
                 lastChild.height = (
@@ -183,10 +189,10 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
             activitySeparatorEnd.height = dpToPx(ACTIVITY_COLUMN_VIEW_SEPARATOR_HEIGHT)
             activitySeparatorEnd.width = activityColumnView.width
             activitySeparatorEnd.setBackgroundColor(
-                ContextCompat.getColor(
-                    applicationContext,
-                    R.color.dark_gray_high
-                )
+                    ContextCompat.getColor(
+                            applicationContext,
+                            R.color.dark_gray_high
+                    )
             )
             activityColumnView.addView(activitySeparatorEnd)
 
@@ -201,17 +207,17 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
 
                 //Reconfigure the height of the textview to allow the centering and the alignment for the next activity
                 @Suppress("NAME_SHADOWING") val wrapSpec: Int =
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
                 (tvBlankActivity.parent as View).measure(
-                    wrapSpec,
-                    wrapSpec
+                        wrapSpec,
+                        wrapSpec
                 )
 
                 val lastBlankChild = activityColumnView.children.last()
 
                 if (lastBlankChild is TextView) {
                     @Suppress("NAME_SHADOWING") val wrapSpec: Int =
-                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
                     (lastBlankChild.parent as View).measure(wrapSpec, wrapSpec)
                     val offset = (lastBlankChild.parent as View).measuredHeight
                     lastBlankChild.height = (
@@ -244,14 +250,19 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
         }
     }
 
-    private inner class DeleteListener(val viewToApplyAnimation : View, val hourSlot: HourSlot) : View.OnClickListener {
+    private inner class DeleteListener(val viewToApplyAnimation: View, val hourSlot: HourSlot) :
+            View.OnClickListener {
         override fun onClick(v: View?) {
-            val animationDuration = 1000L
-            viewToApplyAnimation.animate()?.alphaBy(-10f)?.scaleYBy(-1f)?.scaleXBy(-1f)?.withEndAction {
-                day.timeSlots.remove(hourSlot)
-                SaveManager.saveWeek(applicationContext)
-                refreshDisplay()
-            }?.start()
+            val animation1: Animation = AnimationUtils.loadAnimation(applicationContext, R.anim.delete_anim)
+            viewToApplyAnimation.startAnimation(animation1)
+
+            val h = Handler()
+            h.postDelayed({
+                        day.timeSlots.remove(hourSlot)
+                        SaveManager.saveWeek(applicationContext)
+                        refreshDisplay()
+                    }, applicationContext.resources.getInteger(R.integer.delete_anim_duration).toLong()
+            )
         }
     }
 
