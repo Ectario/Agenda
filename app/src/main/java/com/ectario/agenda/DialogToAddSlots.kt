@@ -105,7 +105,7 @@ class DialogToAddSlots : AppCompatDialogFragment() {
                 it.animate().scaleXBy(scale).scaleYBy(scale).withEndAction {
                     it.animate().scaleXBy(-scale - 1).scaleYBy(-scale - 1).withEndAction {
                         it.animate().scaleX(1f).scaleY(1f).withEndAction {
-                            showTimePickerDialog(TimePickerFragment.CHANGE_STARTTIME)
+                            showTimePickerDialog(DialogTimePicker.CHANGE_STARTTIME)
                             mIsBtnTimePickerClicked = false
                         }
                     }
@@ -120,7 +120,7 @@ class DialogToAddSlots : AppCompatDialogFragment() {
                 it.animate().scaleXBy(scale).scaleYBy(scale).withEndAction {
                     it.animate().scaleXBy(-scale - 1).scaleYBy(-scale - 1).withEndAction {
                         it.animate().scaleX(1f).scaleY(1f).withEndAction {
-                            showTimePickerDialog(TimePickerFragment.CHANGE_ENDTIME)
+                            showTimePickerDialog(DialogTimePicker.CHANGE_ENDTIME)
                             mIsBtnTimePickerClicked = false
                         }
                     }
@@ -148,7 +148,7 @@ class DialogToAddSlots : AppCompatDialogFragment() {
 
     //Display the timePicker
     private fun showTimePickerDialog(actionTag: String) {
-        TimePickerFragment(actionTag).show(activity!!.supportFragmentManager, "timePickerAdd")
+        DialogTimePicker(actionTag).show(activity!!.supportFragmentManager, "timePickerAdd")
     }
 
     override fun onAttach(context: Context) {
