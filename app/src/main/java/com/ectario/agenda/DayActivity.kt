@@ -149,7 +149,14 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
                     applicationContext,
                     R.color.light_gray
                 )
-            )
+            ) //add click listener [to delete]
+            tvActivity.setOnClickListener { _ ->
+                Snackbar.make(
+                    this.findViewById(R.id.constraint_container),
+                    "Supprimer le créneau ${it.slotName} ?", //"it" is not the local variable of the setOnClickListener (which is shadowed by the _)
+                    Snackbar.LENGTH_LONG
+                ).setAction("Oui", DeleteListener(tvActivity,it)).show()
+            }
             activityColumnView.addView(tvActivity)
 
             //Reconfigure the height of the textview to allow the centering and the alignment for the separator
@@ -214,11 +221,7 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
             }
 
         }
-        Snackbar.make(
-            this.findViewById(R.id.constraint_container),
-            "Actualisé",
-            Snackbar.LENGTH_SHORT
-        ).show()
+
     }
 
 
@@ -238,6 +241,17 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
             tvHour.setTextColor(getColor(R.color.black))
             tvHour.text = HourSlot.formattingHour(i.toFloat())
             hourViewToFill.addView(tvHour)
+        }
+    }
+
+    private inner class DeleteListener(val viewToApplyAnimation : View, val hourSlot: HourSlot) : View.OnClickListener {
+        override fun onClick(v: View?) {
+            val animationDuration = 1000L
+            viewToApplyAnimation.animate()?.alphaBy(-10f)?.scaleYBy(-1f)?.scaleXBy(-1f)?.withEndAction {
+                day.timeSlots.remove(hourSlot)
+                SaveManager.saveWeek(applicationContext)
+                refreshDisplay()
+            }?.start()
         }
     }
 
