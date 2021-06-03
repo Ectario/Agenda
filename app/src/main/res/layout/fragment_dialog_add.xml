@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="24dp">
@@ -9,7 +8,10 @@
         android:id="@+id/edit_start_time_add"
         android:layout_width="@dimen/width_edittext_add_time"
         android:layout_height="wrap_content"
-        android:hint="@string/heure_de_debut" />
+        android:autofillHints=""
+        android:maxLength="5"
+        android:hint="@string/heure_de_debut"
+        android:inputType="time" />
 
     <EditText
         android:id="@+id/edit_end_time_add"
@@ -17,27 +19,45 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/edit_start_time_add"
         android:layout_alignParentStart="true"
-        android:hint="@string/heure_de_fin" />
+        android:autofillHints=""
+        android:maxLength="5"
+        android:hint="@string/heure_de_fin"
+        android:inputType="time" />
 
     <ImageButton
         android:id="@+id/btn_timepicker_add_starttime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="7dp"
-        android:layout_toEndOf="@id/edit_start_time_add"
         android:layout_marginStart="20sp"
+        android:layout_toEndOf="@id/edit_start_time_add"
         android:background="@drawable/custom_button_timepicker"
+        android:contentDescription="@string/starttime_timepicker"
+        android:padding="7dp"
         android:src="@drawable/ic_timepicker_add" />
 
     <ImageButton
         android:id="@+id/btn_timepicker_add_endtime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="7dp"
-        android:layout_toEndOf="@id/edit_end_time_add"
         android:layout_alignBottom="@id/edit_end_time_add"
         android:layout_marginStart="20sp"
+        android:layout_toEndOf="@id/edit_end_time_add"
         android:background="@drawable/custom_button_timepicker"
+        android:contentDescription="@string/endtime_timepicker"
+        android:padding="7dp"
         android:src="@drawable/ic_timepicker_add" />
 
-    </RelativeLayout>
+    <EditText
+        android:id="@+id/edit_activity_name_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edit_end_time_add"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="24sp"
+        android:layout_toStartOf="@id/btn_timepicker_add_endtime"
+        android:autofillHints=""
+        android:hint="@string/activity_name_add"
+        android:inputType="text"
+        android:maxLength="30" />
+
+</RelativeLayout>

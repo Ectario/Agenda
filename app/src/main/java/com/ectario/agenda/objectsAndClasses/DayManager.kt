@@ -1,6 +1,6 @@
-package com.ectario.agenda
+package com.ectario.agenda.objectsAndClasses
 
-object DayHolder {
+object DayManager {
     lateinit var currentDay: Day
 
     enum class NameOfDays(val dayName: String) {

@@ -3,4 +3,7 @@
     <string name="btn_add">Add</string>
     <string name="heure_de_debut">Heure de début</string>
     <string name="heure_de_fin">Heure de fin</string>
+    <string name="activity_name_add">Nom de l\'activité</string>
+    <string name="starttime_timepicker">startTime TimePicker</string>
+    <string name="endtime_timepicker">endTime TimePicker</string>
 </resources>
