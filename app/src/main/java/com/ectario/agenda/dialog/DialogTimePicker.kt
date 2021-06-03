@@ -1,4 +1,4 @@
-package com.ectario.agenda
+package com.ectario.agenda.dialog
 
 import android.app.Dialog
 import android.app.TimePickerDialog
@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.format.DateFormat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
+import com.ectario.agenda.AddObserverTimePicker
 
 class DialogTimePicker(private val actionTag : String) : DialogFragment(), TimePickerDialog.OnTimeSetListener {
     private lateinit var mViewModelTimePicker : AddObserverTimePicker

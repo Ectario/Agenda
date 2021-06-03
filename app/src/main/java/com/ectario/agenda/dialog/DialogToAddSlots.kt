@@ -1,4 +1,4 @@
-package com.ectario.agenda
+package com.ectario.agenda.dialog
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -11,6 +11,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.lifecycle.ViewModelProvider
+import com.ectario.agenda.AddObserverTimePicker
+import com.ectario.agenda.objectAndClasses.HourSlot
+import com.ectario.agenda.R
+import com.ectario.agenda.decimalPart
 
 
 class DialogToAddSlots : AppCompatDialogFragment() {

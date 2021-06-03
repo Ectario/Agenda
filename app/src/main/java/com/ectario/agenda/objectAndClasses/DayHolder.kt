@@ -1,4 +1,4 @@
-package com.ectario.agenda
+package com.ectario.agenda.objectAndClasses
 
 object DayHolder {
     lateinit var currentDay: Day
