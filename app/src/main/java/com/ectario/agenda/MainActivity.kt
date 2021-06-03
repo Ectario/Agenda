@@ -4,8 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ectario.agenda.objectAndClasses.Day
-import com.ectario.agenda.objectAndClasses.DayHolder
+import com.ectario.agenda.objectsAndClasses.Day
+import com.ectario.agenda.objectsAndClasses.SaveManager
 
 class MainActivity : AppCompatActivity() {
     private var dayList = ArrayList<Day>()
@@ -16,9 +16,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val dataListRecycler = findViewById<RecyclerView>(R.id.dataList)
+        SaveManager.loadWeek(applicationContext)
 
-        DayHolder.NameOfDays.values().forEach {
-            dayList.add(Day(it.dayName))
+        SaveManager.week?.forEach {
+            dayList.add(it.value)
         }
 
         adapter = Adapter(applicationContext, dayList)

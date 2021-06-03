@@ -1,4 +1,4 @@
-package com.ectario.agenda.objectAndClasses
+package com.ectario.agenda.objectsAndClasses
 
 class Day (val name : String, val timeSlots : ArrayList<HourSlot> = ArrayList()){ // (Time format is 24H)
 

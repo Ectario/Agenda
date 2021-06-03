@@ -9,10 +9,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
-import com.ectario.agenda.objectAndClasses.DayHolder
+import com.ectario.agenda.objectsAndClasses.DayManager
 import com.ectario.agenda.dialog.DialogToAddSlots
-import com.ectario.agenda.objectAndClasses.Day
-import com.ectario.agenda.objectAndClasses.HourSlot
+import com.ectario.agenda.objectsAndClasses.Day
+import com.ectario.agenda.objectsAndClasses.HourSlot
+import com.ectario.agenda.objectsAndClasses.SaveManager
 import com.ectario.agenda.tools.dpToPx
 import com.ectario.agenda.tools.setMargins
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -37,7 +38,7 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
     }
 
     private fun init() {
-        day = DayHolder.currentDay
+        day = DayManager.currentDay
 
         btnAdd.setOnClickListener {
             val scale = 1.4f
@@ -248,6 +249,7 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
     override fun applyAdd(hs: HourSlot) {
         //We need to apply the new slot
         day.addSlot(hs, forcing = true)
+        SaveManager.saveWeek(applicationContext)
         refreshDisplay()
 
     }

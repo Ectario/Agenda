@@ -12,7 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.ectario.agenda.AddObserverTimePicker
-import com.ectario.agenda.objectAndClasses.HourSlot
+import com.ectario.agenda.objectsAndClasses.HourSlot
 import com.ectario.agenda.R
 import com.ectario.agenda.decimalPart
 

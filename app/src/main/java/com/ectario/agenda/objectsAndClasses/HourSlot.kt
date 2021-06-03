@@ -1,4 +1,4 @@
-package com.ectario.agenda.objectAndClasses
+package com.ectario.agenda.objectsAndClasses
 
 import com.ectario.agenda.round
 

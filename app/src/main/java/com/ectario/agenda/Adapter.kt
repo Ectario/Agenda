@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.ectario.agenda.objectAndClasses.Day
-import com.ectario.agenda.objectAndClasses.DayHolder
+import com.ectario.agenda.objectsAndClasses.Day
+import com.ectario.agenda.objectsAndClasses.DayManager
 
 
 class Adapter(ctx: Context?, var dayList: List<Day>) :
@@ -24,7 +24,7 @@ class Adapter(ctx: Context?, var dayList: List<Day>) :
         holder.itemTextview.text = dayList[position].name
         animate(holder.itemView, position)
 
-        if(dayList[position].name == DayHolder.NameOfDays.TO_DO.dayName){
+        if(dayList[position].name == DayManager.NameOfDays.TO_DO.dayName){
             holder.itemTextview.setTextColor(ContextCompat.getColor(holder.itemTextview.context, R.color.purple_200))
         }
     }
@@ -43,7 +43,7 @@ class Adapter(ctx: Context?, var dayList: List<Day>) :
                 it.animate().rotationX(it.rotationX + 360f).setDuration(350).withEndAction {
                     val intent = Intent(it.context, DayActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) //Allow to start an Activity from here
-                    DayHolder.currentDay = dayList[layoutPosition]
+                    DayManager.currentDay = dayList[layoutPosition]
                     it.context.startActivity(intent)
                 }
             }
