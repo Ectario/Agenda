@@ -65,7 +65,7 @@ class DialogToAddSlots : AppCompatDialogFragment() {
                         ).show()
                     }
 
-                    if(changeNeeded == true){
+                    if(changeNeeded){
                         Toast.makeText(
                             context,
                             "Heure hors format 24H/60min [Attention].",
@@ -87,6 +87,9 @@ class DialogToAddSlots : AppCompatDialogFragment() {
                                 activityName
                             )
                         )
+                        //Allow auto-fill the edit text for the next time
+                        mViewModelTimePicker.endTime.value = HourSlot.formattingHour(endTimeFloat)
+                        mViewModelTimePicker.startTime.value = HourSlot.formattingHour(startTimeFloat)
                     }
                 } catch (e: NumberFormatException) {
                     Toast.makeText(
@@ -96,6 +99,7 @@ class DialogToAddSlots : AppCompatDialogFragment() {
                     ).show()
                 }
             }
+
         mEditTextStartTime = view.findViewById(R.id.edit_start_time_add)
         mEditTextEndTime = view.findViewById(R.id.edit_end_time_add)
         mBtnTimePickerStartTime = view.findViewById(R.id.btn_timepicker_add_starttime)
