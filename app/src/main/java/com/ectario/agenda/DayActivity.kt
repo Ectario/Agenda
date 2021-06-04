@@ -1,5 +1,6 @@
 package com.ectario.agenda
 
+import android.annotation.SuppressLint
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
@@ -28,12 +29,14 @@ import com.google.android.material.snackbar.Snackbar
 class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity() {
     private lateinit var day: Day
     private lateinit var btnAdd: FloatingActionButton
-
+    private lateinit var activityColumnView: LinearLayout
+    private lateinit var hourColumnView: LinearLayout
 
     companion object {
         private var is_btn_add_clicked = false //to unable the spam click
         private const val ACTIVITY_COLUMN_VIEW_SEPARATOR_HEIGHT = 2f //in dp
         private const val BLANK_TEXTVIEW_TEXT = ""
+        private const val ACTIVITY_NAME_HIGHLIGHT_DURATION = 250L //in ms
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,13 +65,12 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
             }
         }
 
+        activityColumnView = this.findViewById(R.id.activity_line_id)
+        hourColumnView = this.findViewById(R.id.hour_column_id)
         refreshDisplay()
     }
 
     private fun refreshDisplay() {
-        val activityColumnView = this.findViewById<LinearLayout>(R.id.activity_line_id)
-        val hourColumnView = this.findViewById<LinearLayout>(R.id.hour_column_id)
-
         val listHour = ArrayList<Float>()
         val listHourView = ArrayList<TextView>()
         val yHour =
@@ -84,7 +86,6 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
         sortDayTimesSlots(listHour)
         //Display hours
         displayHours(listHour, listHourView, hourColumnView, yHour)
-
         //Display activity
         displayActivity(activityColumnView, yHour)
 
@@ -145,6 +146,7 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun displayActivityName(
         hourSlot: HourSlot,
         activityColumnView: LinearLayout,
@@ -160,13 +162,33 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
                 applicationContext,
                 R.color.light_gray
             )
-        ) //add click listener [to delete]
-        tvActivity.setOnClickListener { _ ->
+        )
+
+        //add click listener [to delete]
+        tvActivity.setOnClickListener {
+            val h = Handler(Looper.myLooper()!!)
+            it.setBackgroundColor(
+                ContextCompat.getColor(
+                    applicationContext,
+                    R.color.transparent_yellow
+                )
+            )
             Snackbar.make(
                 this.findViewById(R.id.constraint_container),
-                "Supprimer le créneau ${hourSlot.slotName} ?", //"it" is not the local variable of the setOnClickListener (which is shadowed by the _)
+                "Supprimer le créneau ${hourSlot.slotName} ?",
                 Snackbar.LENGTH_LONG
-            ).setAction("Oui", DeleteListener(tvActivity, hourSlot)).show()
+            ).setAction("Oui", DeleteListener(hourSlot, tvActivity)).show()
+            //To cancel the highlight
+            h.postDelayed(
+                {
+                    it.setBackgroundColor(
+                        ContextCompat.getColor(
+                            applicationContext,
+                            R.color.light_gray
+                        )
+                    )
+                }, ACTIVITY_NAME_HIGHLIGHT_DURATION
+            )
         }
         activityColumnView.addView(tvActivity)
 
@@ -278,13 +300,16 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
         }
     }
 
-    private inner class DeleteListener(val viewToApplyAnimation: View, val hourSlot: HourSlot) :
+    private inner class DeleteListener(val hourSlot: HourSlot, val viewToApplyAnimation: View) :
         View.OnClickListener {
         override fun onClick(v: View?) {
+            delete(hourSlot, viewToApplyAnimation)
+        }
+
+        private fun delete(hourSlot: HourSlot, viewToApplyAnimation: View) {
             val animation1: Animation =
                 AnimationUtils.loadAnimation(applicationContext, R.anim.delete_anim)
             viewToApplyAnimation.startAnimation(animation1)
-
             val h = Handler(Looper.myLooper()!!)
             h.postDelayed(
                 {
@@ -301,11 +326,31 @@ class DayActivity : DialogToAddSlots.AddSlotsDialogListener, AppCompatActivity()
         dialog.show(supportFragmentManager, "dialog")
     }
 
+
     override fun applyAdd(hs: HourSlot) {
         //We need to apply the new slot
-        day.addSlot(hs, forcing = true)
-        SaveManager.saveWeek(applicationContext)
-        refreshDisplay()
+        var isColliding = false
 
+        day.timeSlots.forEach {
+            if (day.collidingSlots(it, hs)) {
+                Snackbar.make(
+                    this.findViewById(R.id.constraint_container),
+                    "Il faut supprimer des créneaux dont \"${it.slotName}\", est-ce voulu ?",
+                    Snackbar.LENGTH_LONG
+                ).setAction("Oui") {
+                    day.addSlot(hs, forcing = true)
+                    SaveManager.saveWeek(applicationContext)
+                    refreshDisplay()
+                }.show()
+                isColliding = true
+                return@forEach
+            }
+        }
+
+        if (!isColliding) {
+            day.addSlot(hs, forcing = false)
+            SaveManager.saveWeek(applicationContext)
+            refreshDisplay()
+        }
     }
 }

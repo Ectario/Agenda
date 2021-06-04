@@ -11,6 +11,7 @@
     <color name="pink_purple">#D3C4E3</color>
     <color name="darker_gray">#BB323232</color>
     <color name="light_gray">#10323232</color>
+    <color name="transparent_yellow">#10b0aa25</color>
     <color name="dark_gray_high">#80323232</color>
     <color name="dark_gray_70percent">#5A323232</color>
 </resources>
