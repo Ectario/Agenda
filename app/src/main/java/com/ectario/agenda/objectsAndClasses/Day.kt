@@ -19,7 +19,7 @@ class Day (val name : String, val timeSlots : ArrayList<HourSlot> = ArrayList())
     }
 
 
-    private fun collidingSlots(hs1 : HourSlot, hs2 : HourSlot) : Boolean {
+    fun collidingSlots(hs1 : HourSlot, hs2 : HourSlot) : Boolean {
         return (hs1.startTime <= hs2.startTime && hs1.endTime >= hs2.startTime) || (hs2.startTime <= hs1.startTime && hs2.endTime >= hs1.startTime)
     }
 
