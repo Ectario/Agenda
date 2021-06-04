@@ -14,17 +14,25 @@ Need API > 23 (Android 7.0 minimum required).
 
 - **Add Schedule**
   - With handwriting :
-
+  
+  Write the time like hour:min
+    
   ![add_1_part](https://user-images.githubusercontent.com/61197119/120818172-a6b80500-c552-11eb-88cd-ca1770184340.gif)
 
   - With Timepicker : 
-
+  
+  Choose the time that you want.
+    
   ![add_2_part](https://user-images.githubusercontent.com/61197119/120818757-3362c300-c553-11eb-8539-055ab552ce18.gif)
 
 - **Delete Schedule**
 
+Click on the time slot to delete.
+
 ![delete](https://user-images.githubusercontent.com/61197119/120818833-44abcf80-c553-11eb-99f8-046ee90db128.gif)
 
 - **Erase Schedule**
+
+Pop-up appear and then accept it.
 
 ![erase](https://user-images.githubusercontent.com/61197119/120818913-568d7280-c553-11eb-8fbd-053a79c2797c.gif)
