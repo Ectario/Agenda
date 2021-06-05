@@ -2,7 +2,7 @@
 
 ## Description
 
-Agenda is an application that allows you to make a schedule of a typical week. For example if the next week is a trip / week of revision / or other thing occurs, it is necessary to mark the planned activities -> Agenda
+Agenda is an application that allows you to make a schedule of a typical week. For example if the next week is a trip / week of revision / or other thing occurs, it is necessary to mark the planned activities then Agenda
 
 Really easy to use, fluid and even allows you to put extra activities in the day TO DO. For example if we know that one morning we must cook eggs, without knowing precisely when, we can put in TO DO from 10h to 12h "cook eggs".
 
